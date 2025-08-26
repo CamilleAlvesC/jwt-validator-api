@@ -1,0 +1,55 @@
+
+Conteúdo:
+
+```yaml
+name: CI/CD JWT API
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          source .venv/bin/activate
+          pytest -v
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 565393040767.dkr.ecr.us-east-1.amazonaws.com
+
+      - name: Build, tag and push Docker image
+        run: |
+          docker build -t jwt-api:latest .
+          docker tag jwt-api:latest 565393040767.dkr.ecr.us-east-1.amazonaws.com/projectjwt/jwt-api:latest
+          docker push 565393040767.dkr.ecr.us-east-1.amazonaws.com/projectjwt/jwt-api:latest
+
+      - name: Update ECS service
+        run: |
+          aws ecs update-service --cluster jwt-api-cluster --service jwt-api-service --force-new-deployment
