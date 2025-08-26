@@ -22,17 +22,6 @@ Aplicação em **FastAPI** que valida um JWT conforme as regras do desafio:
 
 ---
 
-<!-- ## 📖 Índice
-
-* [Como rodar localmente](#-como-rodar-localmente)
-* [Teste rápido (cURL)](#-teste-rápido-curl)
-* [Endpoints](#-endpoints)
-* [Testes](#-testes)
-* [Requisitos](#-requisitos)
-* [Observações](#-observações)
-
---- -->
-
 ## 📖 Índice
 
 * [Como rodar localmente](#-como-rodar-localmente)
